@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.hpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: asaber <asaber@student.42.fr>              +#+  +:+       +#+        */
+/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/05 02:34:37 by ymaaloum          #+#    #+#             */
-/*   Updated: 2024/09/12 00:23:06 by asaber           ###   ########.fr       */
+/*   Updated: 2024/09/12 17:09:01 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,6 +73,7 @@ class server
 	const std :: string 		_port;
 	const std :: string 		_password;
 	int							_serv_socket_fd;
+	std::vector<std::string>	channelSplited;
 
 	public :
 		server(const std::string &,const std::string &);
@@ -113,6 +114,7 @@ class server
 		// asaber
 		void		start_in_channel(const std::vector<std::string> &split_cmd, std::vector<std::string>channelSplited, char mode, size_t fd, size_t i);
 		void		addClientToInviteOnlyChannel(const std::vector<std::string> &split_cmd, std::vector<std::string>channelSplited, char mode, int fd, size_t i);
+		void		processJoinRequest(size_t fd, size_t i);
 
 };
 

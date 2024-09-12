@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   server.cpp                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: asaber <asaber@student.42.fr>              +#+  +:+       +#+        */
+/*   By: marvin <marvin@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/07/05 02:37:50 by ymaaloum          #+#    #+#             */
-/*   Updated: 2024/09/12 00:29:30 by asaber           ###   ########.fr       */
+/*   Updated: 2024/09/12 17:09:46 by marvin           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -526,6 +526,17 @@ char		server::memberChannelNumbers(const std::string& name)
 		}
 	}
 
+
+	void	server::processJoinRequest(size_t fd, size_t i)
+	{
+		std::cout << "3" << std::endl;
+		std::vector<std::string> invited;
+		this->_client[fd]->channel.push_back(channels(channelSplited[i], 1 << TOPIC, 1, invited));
+		printf_message(RPL_JOIN(this->_client[fd]->_nickname, this->_client[fd]->_username, channelSplited[i], this->_client[fd]->_ipclient) ,fd);
+		printf_message(RPL_NAMREPLY(this->_client[fd]->_ipclient, clientChannels(channelSplited[i]), channelSplited[i], this->_client[fd]->_nickname), fd);
+		displayTopic(topicName(channelSplited[i]), channelSplited[i]);
+	}
+
 	void	server::join(const std :: vector<std::string>& split_cmd , int fd)
 	{
 		unsigned	int		i;
@@ -538,7 +549,7 @@ char		server::memberChannelNumbers(const std::string& name)
 		else
 		{
 			std :: cout << "/*/*/**" << std :: endl;
-			std::vector<std::string>channelSplited = split(split_cmd[1], ',');
+			this->channelSplited = split(split_cmd[1], ',');
 			while (i < channelSplited.size())
 			{
 				if (checkChannelName(channelSplited[i]))
@@ -553,12 +564,7 @@ char		server::memberChannelNumbers(const std::string& name)
 					}
 					else
 					{
-						std::cout << "3" << std::endl;
-						std::vector<std::string> invited;
-						this->_client[fd]->channel.push_back(channels(channelSplited[i], 1 << TOPIC, 1, invited));
-						printf_message(RPL_JOIN(this->_client[fd]->_nickname, this->_client[fd]->_username, channelSplited[i], this->_client[fd]->_ipclient) ,fd);
-						printf_message(RPL_NAMREPLY(this->_client[fd]->_ipclient, clientChannels(channelSplited[i]), channelSplited[i], this->_client[fd]->_nickname), fd);
-						displayTopic(topicName(channelSplited[i]), channelSplited[i]);
+						processJoinRequest(fd, i);
 					}
 				}
 				else
