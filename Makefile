@@ -3,53 +3,72 @@
 #                                                         :::      ::::::::    #
 #    Makefile                                           :+:      :+:    :+:    #
 #                                                     +:+ +:+         +:+      #
-#    By: ymaaloum <ymaaloum@student.1337.ma>        +#+  +:+       +#+         #
+#    By: asaber <asaber@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2024/06/11 15:52:46 by ymaaloum          #+#    #+#              #
-#    Updated: 2024/09/11 08:57:04 by ymaaloum         ###   ########.fr        #
+#    Created: 2024/09/12 17:20:56 by asaber            #+#    #+#              #
+#    Updated: 2024/09/12 18:33:55 by asaber           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-CXX			=	g++
-CXXFLAGS	=	-Wall -Wextra -Werror -std=c++98
+CXX = c++
+CXXFLAGS = -std=c++98 -Wall -Wextra -Werror
+
+RM = rm -rf
+
+SRCS = 	src/main.cpp \
+		src/network/server.cpp \
+		src/network/client.cpp \
+		src/network/channels.cpp \
+		src/Parse/Parse.cpp \
+		src/function_utils/Func_Utils.cpp
+OBJS = $(SRCS:.cpp=.o)
+NAME = ircserv
+
+SLEEP = sleep 2
+
+ICYAN=\033[1;33m
+CYAN=\033[1;32m
+END=\033[0m
+
+BANNER = \
+"              $(CYAN)	░▒▓█▓▒░ ░▒▓███████▓▒░   ░▒▓██████▓▒░  RC$(END)  \n"\
+"              $(CYAN)	░▒▓█▓▒░ ░▒▓█▓▒░░▒▓█▓▒░ ░▒▓█▓▒░░▒▓█▓▒░ $(END)  \n"\
+"              $(CYAN)	░▒▓█▓▒░ ░▒▓█▓▒░░▒▓█▓▒░ ░▒▓█▓▒░        $(END)  \n"\
+"              $(CYAN)	░▒▓█▓▒░ ░▒▓███████▓▒░  ░▒▓█▓▒░        $(END)  \n"\
+"              $(CYAN)	░▒▓█▓▒░ ░▒▓█▓▒░░▒▓█▓▒░ ░▒▓█▓▒░        $(END)  \n"\
+"              $(CYAN)	░▒▓█▓▒░ ░▒▓█▓▒░░▒▓█▓▒░ ░▒▓█▓▒░░▒▓█▓▒░ $(END)  \n"\
+"              $(CYAN)	░▒▓█▓▒░ ░▒▓█▓▒░░▒▓█▓▒░  ░▒▓██████▓▒░  $(END)\033[1;40m:Created by YASSIR DON-FREX YASSINE$(END)  \n"\
+                                      
+                                      
 
 
-NAME		= 	ircserv
 
-SRC			=	src/main.cpp \
-				src/network/server.cpp \
-				src/network/client.cpp \
-				src/network/channels.cpp \
-				src/Parse/Parse.cpp \
-				src/function_utils/Func_Utils.cpp
+BANNER_LENGTH = 9
 
-RESET		= \033[1;97m
-GREEN		= \033[1;32m
-RED			= \033[1;31m
+%.o : %.cpp
+	@echo "$(CYAN)Compiling $<...$(END)"
+	@$(CXX) $(CXXFLAGS) -c $< -o $@
 
-OBJ			= $(patsubst src/%.cpp,obj/%.o,$(SRC))
-OBJ_DIR 	= obj/
-OBJ_SUBDIRS = $(OBJ_DIR) $(OBJ_DIR)network $(OBJ_DIR)function_utils $(OBJ_DIR)Parse
+all : $(NAME)
 
-all: $(OBJ_SUBDIRS) $(NAME)
+$(NAME) : $(OBJS)
+	@echo "$(ICYAN)All is compiled:$(END)"
+	@$(CXX) $(CXXFLAGS) $(OBJS) -o $(NAME)
+	@for i in `seq 1 $(BANNER_LENGTH)`; do \
+		echo $(BANNER) | sed -n "$$i p"; \
+		sleep 0.02; \
+	done
+	@sleep 0.5
+	@echo "$(ICYAN)Done !$(END)"
+	@sleep 0.1
+clean :
+	@echo "$(ICYAN)Cleaning ...$(END)"
+	@sleep 0.2
+	@$(RM) $(OBJS)
 
-$(OBJ_SUBDIRS):
-	@mkdir -p $@
-	@echo "$(GREEN)$@ : Created ! [^_^]$(RESET)"
+fclean : clean
+	@$(RM) $(NAME)
 
-$(NAME): $(OBJ)
-	@$(CXX) $(CXXFLAGS) $(OBJ) -o $(NAME)
-	@echo "$(GREEN)$(NAME) : Created ! [^_^]$(RESET)"
+re : fclean all
 
-obj/%.o: src/%.cpp
-	$(CXX) $(CXXFLAGS) -c $< -o $@
-
-clean:
-	@rm -rf $(OBJ_DIR)
-	@echo "$(RED)$(OBJ_DIR) : directory deleted ! [^_^]$(RESET)"
-
-fclean: clean
-	@rm -f $(NAME)
-	@echo "$(RED)$(NAME) : executable deleted ! [^_^]$(RESET)"
-
-re: fclean all
+.PHONY : all clean fclean re
